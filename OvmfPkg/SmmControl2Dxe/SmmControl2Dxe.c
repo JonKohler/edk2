@@ -226,6 +226,10 @@ SmmControl2DxeEntryPoint (
     POWER_MGMT_REGISTER_Q35 (ICH9_GEN_PMCON_1),
     ICH9_GEN_PMCON_1_SMI_LOCK
     );
+  PciOr16 (
+    POWER_MGMT_REGISTER_Q35 (ICH9_GEN_PMCON_LOCK),
+    ICH9_GEN_PMCON_LOCK_ACPI_BASE_LOCK
+    );
 
   //
   // If we can clear GBL_SMI_EN now, that means QEMU's SMI support is not
@@ -348,6 +352,8 @@ OnS3SaveStateInstalled (
   UINT32                      SmiEnOrMask, SmiEnAndMask;
   UINT64                      GenPmCon1Address;
   UINT16                      GenPmCon1OrMask, GenPmCon1AndMask;
+  UINT64                      GenPmConLockAddress;
+  UINT16                      GenPmConLockOrMask, GenPmConLockAndMask;
 
   ASSERT (Event == mS3SaveStateInstalled);
 
@@ -398,6 +404,30 @@ OnS3SaveStateInstalled (
                                     &GenPmCon1OrMask,
                                     &GenPmCon1AndMask
                                     );
+  if (EFI_ERROR (Status)) {
+    DEBUG ((
+      DEBUG_ERROR,
+      "%a: EFI_BOOT_SCRIPT_PCI_CONFIG_READ_WRITE_OPCODE: %r\n",
+      __func__,
+      Status
+      ));
+    ASSERT (FALSE);
+    CpuDeadLoop ();
+  }
+
+  GenPmConLockAddress = POWER_MGMT_REGISTER_Q35_EFI_PCI_ADDRESS (
+                          ICH9_GEN_PMCON_LOCK
+                          );
+  GenPmConLockOrMask  = ICH9_GEN_PMCON_LOCK_ACPI_BASE_LOCK;
+  GenPmConLockAndMask = MAX_UINT16;
+  Status              = S3SaveState->Write (
+                                       S3SaveState,
+                                       EFI_BOOT_SCRIPT_PCI_CONFIG_READ_WRITE_OPCODE,
+                                       EfiBootScriptWidthUint16,
+                                       GenPmConLockAddress,
+                                       &GenPmConLockOrMask,
+                                       &GenPmConLockAndMask
+                                       );
   if (EFI_ERROR (Status)) {
     DEBUG ((
       DEBUG_ERROR,

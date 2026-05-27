@@ -229,6 +229,10 @@ MmControlPeiEntryPoint (
     POWER_MGMT_REGISTER_Q35 (ICH9_GEN_PMCON_1),
     ICH9_GEN_PMCON_1_SMI_LOCK
     );
+  PciOr16 (
+    POWER_MGMT_REGISTER_Q35 (ICH9_GEN_PMCON_LOCK),
+    ICH9_GEN_PMCON_LOCK_ACPI_BASE_LOCK
+    );
 
   //
   // If we can clear GBL_SMI_EN now, that means QEMU's SMI support is not

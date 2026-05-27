@@ -102,6 +102,9 @@
 #define ICH9_GEN_PMCON_1           0xA0
 #define ICH9_GEN_PMCON_1_SMI_LOCK  BIT4
 
+#define ICH9_GEN_PMCON_LOCK                 0xA6
+#define ICH9_GEN_PMCON_LOCK_ACPI_BASE_LOCK  BIT0
+
 #define ICH9_RCBA     0xF0
 #define ICH9_RCBA_EN  BIT0
 
